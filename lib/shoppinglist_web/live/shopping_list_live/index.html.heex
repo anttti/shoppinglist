@@ -1,0 +1,111 @@
+<%= if @current_user do %>
+  <.header>
+    My Shopping Lists
+    <:actions>
+      <.link patch={~p"/lists/new"}>
+        <.button>New Shopping List</.button>
+      </.link>
+    </:actions>
+  </.header>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+    <div
+      :for={{id, shopping_list} <- @streams.shopping_lists}
+      id={id}
+      class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200"
+    >
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center space-x-3">
+          <div class="w-6 h-6 rounded-full" style={"background-color: #{shopping_list.color}"}></div>
+          <h3 class="text-lg font-semibold text-gray-900"><%= shopping_list.name %></h3>
+        </div>
+        <div class="flex space-x-2">
+          <.link
+            patch={~p"/lists/#{shopping_list}/edit"}
+            class="text-gray-400 hover:text-gray-600"
+          >
+            <.icon name="hero-pencil-square" class="h-5 w-5" />
+          </.link>
+          <.link
+            phx-click={JS.push("delete", value: %{id: shopping_list.id}) |> hide("##{id}")}
+            data-confirm="Are you sure?"
+            class="text-red-400 hover:text-red-600"
+          >
+            <.icon name="hero-trash" class="h-5 w-5" />
+          </.link>
+        </div>
+      </div>
+      
+      <div class="mb-4">
+        <p class="text-sm text-gray-600">
+          <%= length(shopping_list.items) %> items
+          · <%= Enum.count(shopping_list.items, & &1.collected) %> collected
+        </p>
+        <p class="text-xs text-gray-500 mt-1">
+          Created by <%= shopping_list.creator.email %>
+        </p>
+        <p :if={length(shopping_list.users) > 0} class="text-xs text-gray-500">
+          Shared with <%= length(shopping_list.users) %> <%= if length(shopping_list.users) == 1, do: "person", else: "people" %>
+        </p>
+      </div>
+      
+      <.link
+        navigate={~p"/lists/#{shopping_list}"}
+        class="block w-full text-center bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-200"
+      >
+        View List
+      </.link>
+    </div>
+  </div>
+
+  <.modal :if={@live_action in [:new, :edit]} id="shopping_list-modal" show on_cancel={JS.patch(~p"/lists")}>
+    <.live_component
+      module={ShoppinglistWeb.ShoppingListLive.FormComponent}
+      id={@shopping_list.id || :new}
+      title={@page_title}
+      action={@live_action}
+      shopping_list={@shopping_list}
+      current_user={@current_user}
+      patch={~p"/lists"}
+    />
+  </.modal>
+<% else %>
+  <!-- Welcome page for unauthenticated users -->
+  <div class="text-center py-16">
+    <.icon name="hero-shopping-bag" class="w-24 h-24 text-blue-600 mx-auto mb-8" />
+    <h1 class="text-4xl font-bold text-gray-900 mb-4">Welcome to Shopping Lists</h1>
+    <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+      Organize your shopping with collaborative lists that sync in real-time. 
+      Create, share, and manage your shopping lists with friends and family.
+    </p>
+    
+    <div class="flex justify-center space-x-4">
+      <.link navigate={~p"/users/register"} class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200">
+        Get Started
+      </.link>
+      <.link navigate={~p"/users/log_in"} class="bg-gray-100 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors duration-200">
+        Log In
+      </.link>
+    </div>
+    
+    <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+      <div class="text-center">
+        <.icon name="hero-list-bullet" class="w-12 h-12 text-blue-600 mx-auto mb-4" />
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Organize Your Shopping</h3>
+        <p class="text-gray-600">Create multiple shopping lists with custom colors and organize your items efficiently.</p>
+      </div>
+      
+      <div class="text-center">
+        <.icon name="hero-users" class="w-12 h-12 text-blue-600 mx-auto mb-4" />
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Share with Others</h3>
+        <p class="text-gray-600">Collaborate with family and friends by sharing your shopping lists in real-time.</p>
+      </div>
+      
+      <div class="text-center">
+        <.icon name="hero-check-circle" class="w-12 h-12 text-blue-600 mx-auto mb-4" />
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Track Progress</h3>
+        <p class="text-gray-600">Check off items as you shop and see your progress update instantly across all devices.</p>
+      </div>
+    </div>
+  </div>
+<% end %> 

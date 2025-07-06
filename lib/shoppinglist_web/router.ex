@@ -1,6 +1,8 @@
 defmodule ShoppinglistWeb.Router do
   use ShoppinglistWeb, :router
 
+  import ShoppinglistWeb.UserAuth
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -8,16 +10,11 @@ defmodule ShoppinglistWeb.Router do
     plug :put_root_layout, html: {ShoppinglistWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :fetch_current_user
   end
 
   pipeline :api do
     plug :accepts, ["json"]
-  end
-
-  scope "/", ShoppinglistWeb do
-    pipe_through :browser
-
-    get "/", PageController, :home
   end
 
   # Other scopes may use custom stacks.
@@ -39,6 +36,53 @@ defmodule ShoppinglistWeb.Router do
 
       live_dashboard "/dashboard", metrics: ShoppinglistWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
+    end
+  end
+
+  ## Authentication routes
+
+  scope "/", ShoppinglistWeb do
+    pipe_through [:browser, :redirect_if_user_is_authenticated]
+
+    live_session :redirect_if_user_is_authenticated,
+      on_mount: [{ShoppinglistWeb.UserAuth, :redirect_if_user_is_authenticated}] do
+      live "/users/register", UserRegistrationLive, :new
+      live "/users/log_in", UserLoginLive, :new
+      live "/users/reset_password", UserForgotPasswordLive, :new
+      live "/users/reset_password/:token", UserResetPasswordLive, :edit
+    end
+
+    post "/users/log_in", UserSessionController, :create
+  end
+
+  scope "/", ShoppinglistWeb do
+    pipe_through [:browser, :require_authenticated_user]
+
+    live_session :require_authenticated_user,
+      on_mount: [{ShoppinglistWeb.UserAuth, :ensure_authenticated}] do
+      live "/users/settings", UserSettingsLive, :edit
+      live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
+
+      live "/lists", ShoppingListLive.Index, :index
+      live "/lists/new", ShoppingListLive.Index, :new
+      live "/lists/:id/edit", ShoppingListLive.Index, :edit
+      live "/lists/:id", ShoppingListLive.Show, :show
+      live "/lists/:id/show/edit", ShoppingListLive.Show, :edit
+      live "/lists/:id/show/share", ShoppingListLive.Show, :share
+    end
+  end
+
+  scope "/", ShoppinglistWeb do
+    pipe_through [:browser]
+
+    delete "/users/log_out", UserSessionController, :delete
+
+    live_session :current_user,
+      on_mount: [{ShoppinglistWeb.UserAuth, :mount_current_user}] do
+      live "/users/confirm/:token", UserConfirmationLive, :edit
+      live "/users/confirm", UserConfirmationInstructionsLive, :new
+
+      live "/", ShoppingListLive.Index, :index
     end
   end
 end
