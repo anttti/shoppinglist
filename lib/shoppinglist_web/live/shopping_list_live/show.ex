@@ -26,16 +26,29 @@ defmodule ShoppinglistWeb.ShoppingListLive.Show do
   end
 
   @impl true
-  def handle_info({:shopping_list_item_created, item}, socket) do
-    {:noreply,
-     socket
-     |> assign(:has_items, true)
-     |> stream_insert(:shopping_list_items, item)}
+  def handle_info({:shopping_list_item_created, _item}, socket) do
+    # Reload all items to ensure consistency
+    shopping_list = Shopping.get_shopping_list!(socket.assigns.shopping_list.id)
+
+    updated_socket =
+      socket
+      |> stream(:shopping_list_items, shopping_list.items, reset: true)
+      |> assign(:has_items, length(shopping_list.items) > 0)
+
+    {:noreply, updated_socket}
   end
 
   @impl true
-  def handle_info({:shopping_list_item_updated, item}, socket) do
-    {:noreply, stream_insert(socket, :shopping_list_items, item)}
+  def handle_info({:shopping_list_item_updated, _item}, socket) do
+    # Reload all items to ensure consistency
+    shopping_list = Shopping.get_shopping_list!(socket.assigns.shopping_list.id)
+
+    updated_socket =
+      socket
+      |> stream(:shopping_list_items, shopping_list.items, reset: true)
+      |> assign(:has_items, length(shopping_list.items) > 0)
+
+    {:noreply, updated_socket}
   end
 
   @impl true
