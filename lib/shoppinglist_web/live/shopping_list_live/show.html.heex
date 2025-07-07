@@ -27,19 +27,19 @@
   <h3 class="text-lg font-semibold mb-4">Add New Item</h3>
   <form phx-submit="add_item" class="flex space-x-4">
     <div class="flex-1">
-      <input 
-        type="text" 
-        name="item[name]" 
-        placeholder="Item name" 
-        required 
+      <input
+        type="text"
+        name="item[name]"
+        placeholder="Item name"
+        required
         class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
       />
     </div>
     <div class="w-32">
-      <input 
-        type="text" 
-        name="item[amount]" 
-        placeholder="Amount" 
+      <input
+        type="text"
+        name="item[amount]"
+        placeholder="Amount"
         value="1"
         class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
       />
@@ -51,7 +51,7 @@
 </div>
 
 <!-- Shopping List Items -->
-<div class="space-y-3">
+<div class="space-y-3" phx-update="stream" id="shopping-list-items">
   <div
     :for={{id, item} <- @streams.shopping_list_items}
     id={id}
@@ -72,7 +72,7 @@
       >
         <.icon :if={item.collected} name="hero-check" class="w-4 h-4 text-white" />
       </button>
-      
+
       <div class="flex-1">
         <div class={[
           "font-medium transition-all duration-200",
@@ -86,7 +86,7 @@
         </div>
       </div>
     </div>
-    
+
     <button
       phx-click="delete_item"
       phx-value-id={item.id}
@@ -123,4 +123,4 @@
     shopping_list={@shopping_list}
     current_user={@current_user}
   />
-</.modal> 
+</.modal>

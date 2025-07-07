@@ -54,7 +54,6 @@ defmodule ShoppinglistWeb.ShoppingListLive.Show do
   @impl true
   def handle_info({:shopping_list_item_deleted, item}, socket) do
     updated_socket = stream_delete(socket, :shopping_list_items, item)
-    # Check if there are any items left by counting the current items
     shopping_list = Shopping.get_shopping_list!(socket.assigns.shopping_list.id)
     has_items = length(shopping_list.items) > 0
 
@@ -78,7 +77,6 @@ defmodule ShoppinglistWeb.ShoppingListLive.Show do
           |> stream(:shopping_list_items, shopping_list.items, reset: true)
           |> assign(:has_items, length(shopping_list.items) > 0)
 
-        # Broadcast to other users only
         Task.start(fn ->
           Shopping.broadcast_shopping_list_item_update(item, :shopping_list_item_created)
         end)
@@ -104,7 +102,6 @@ defmodule ShoppinglistWeb.ShoppingListLive.Show do
           |> stream(:shopping_list_items, shopping_list.items, reset: true)
           |> assign(:has_items, length(shopping_list.items) > 0)
 
-        # Broadcast to other users only
         Task.start(fn ->
           Shopping.broadcast_shopping_list_item_update(updated_item, :shopping_list_item_updated)
         end)
@@ -130,7 +127,6 @@ defmodule ShoppinglistWeb.ShoppingListLive.Show do
           |> stream(:shopping_list_items, shopping_list.items, reset: true)
           |> assign(:has_items, length(shopping_list.items) > 0)
 
-        # Broadcast to other users only
         Task.start(fn ->
           Shopping.broadcast_shopping_list_item_update(deleted_item, :shopping_list_item_deleted)
         end)
