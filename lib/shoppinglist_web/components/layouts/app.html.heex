@@ -8,10 +8,6 @@
     </div>
     <div class="flex items-center gap-4 font-semibold leading-6 text-zinc-900">
       <%= if @current_user do %>
-        <span class="text-sm text-gray-600">Welcome, <%= @current_user.email %></span>
-        <.link navigate={~p"/lists"} class="hover:text-zinc-700">
-          My Lists
-        </.link>
         <.link navigate={~p"/users/settings"} class="hover:text-zinc-700">
           Settings
         </.link>
