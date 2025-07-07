@@ -1,59 +1,51 @@
 <%= if @current_user do %>
-  <.header>
-    My Shopping Lists
-    <:actions>
-      <.link patch={~p"/lists/new"}>
-        <.button>New Shopping List</.button>
-      </.link>
-    </:actions>
-  </.header>
-
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8" phx-update="stream" id="shopping-lists">
-    <div
-      :for={{id, shopping_list} <- @streams.shopping_lists}
-      id={id}
-      class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200"
-    >
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center space-x-3">
-          <div class="w-6 h-6 rounded-full" style={"background-color: #{shopping_list.color}"}></div>
-          <.link
-            navigate={~p"/lists/#{shopping_list}"}
-          >
-            <h3 class="text-lg font-semibold text-gray-900"><%= shopping_list.name %></h3>
-          </.link>
+  <div class="flex flex-col gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" phx-update="stream" id="shopping-lists">
+      <div
+        :for={{id, shopping_list} <- @streams.shopping_lists}
+        id={id}
+        class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200"
+      >
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center space-x-3">
+            <div class="w-6 h-6 rounded-full" style={"background-color: #{shopping_list.color}"}></div>
+            <.link
+              navigate={~p"/lists/#{shopping_list}"}
+            >
+              <h3 class="text-lg font-semibold text-gray-900"><%= shopping_list.name %></h3>
+            </.link>
+          </div>
+          <div class="flex space-x-2">
+            <.link
+              patch={~p"/lists/#{shopping_list}/edit"}
+              class="text-gray-400 hover:text-gray-600"
+            >
+              <.icon name="hero-pencil-square" class="h-5 w-5" />
+            </.link>
+            <.link
+              phx-click={JS.push("delete", value: %{id: shopping_list.id}) |> hide("##{id}")}
+              data-confirm="Are you sure?"
+              class="text-red-400 hover:text-red-600"
+            >
+              <.icon name="hero-trash" class="h-5 w-5" />
+            </.link>
+          </div>
         </div>
-        <div class="flex space-x-2">
-          <.link
-            patch={~p"/lists/#{shopping_list}/edit"}
-            class="text-gray-400 hover:text-gray-600"
-          >
-            <.icon name="hero-pencil-square" class="h-5 w-5" />
-          </.link>
-          <.link
-            phx-click={JS.push("delete", value: %{id: shopping_list.id}) |> hide("##{id}")}
-            data-confirm="Are you sure?"
-            class="text-red-400 hover:text-red-600"
-          >
-            <.icon name="hero-trash" class="h-5 w-5" />
-          </.link>
+
+        <div class="mb-4">
+          <p class="text-xs text-gray-500 mt-1">
+            Created by <%= shopping_list.creator.email %>
+          </p>
+          <p :if={length(shopping_list.users) > 0} class="text-xs text-gray-500">
+            Shared with <%= length(shopping_list.users) %> <%= if length(shopping_list.users) == 1, do: "person", else: "people" %>
+          </p>
         </div>
       </div>
-
-      <div class="mb-4">
-        <p class="text-sm text-gray-600">
-          <%= length(shopping_list.items) %> items
-          · <%= Enum.count(shopping_list.items, & &1.collected) %> collected
-        </p>
-        <p class="text-xs text-gray-500 mt-1">
-          Created by <%= shopping_list.creator.email %>
-        </p>
-        <p :if={length(shopping_list.users) > 0} class="text-xs text-gray-500">
-          Shared with <%= length(shopping_list.users) %> <%= if length(shopping_list.users) == 1, do: "person", else: "people" %>
-        </p>
-      </div>
-
     </div>
+
+    <.link patch={~p"/lists/new"}>
+      <.button>New Shopping List</.button>
+    </.link>
   </div>
 
   <.modal :if={@live_action in [:new, :edit]} id="shopping_list-modal" show on_cancel={JS.patch(~p"/lists")}>
