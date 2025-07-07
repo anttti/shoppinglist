@@ -110,7 +110,6 @@ defmodule ShoppinglistWeb.ShoppingListLive.ShareComponent do
 
               {:noreply,
                socket
-               |> put_flash(:info, "User #{email} added successfully")
                |> assign(:form, to_form(%{"email" => ""}))}
 
             {:error, changeset} ->
@@ -132,8 +131,6 @@ defmodule ShoppinglistWeb.ShoppingListLive.ShareComponent do
       {1, _} ->
         updated_list = Shopping.get_shopping_list!(socket.assigns.shopping_list.id)
         send(self(), {:shopping_list_updated, updated_list})
-
-        {:noreply, put_flash(socket, :info, "User removed successfully")}
 
       {0, _} ->
         {:noreply, put_flash(socket, :error, "User was not found in the list")}
