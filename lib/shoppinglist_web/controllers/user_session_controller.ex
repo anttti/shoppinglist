@@ -18,12 +18,18 @@ defmodule ShoppinglistWeb.UserSessionController do
     create_user(conn, params)
   end
 
-  defp create_user(conn, %{"user" => user_params}) do
+  defp create_user(conn, %{"user" => user_params} = params) do
     %{"email" => email, "password" => password} = user_params
 
     if user = Accounts.get_user_by_email_and_password(email, password) do
+      # Extract remember_me from user_params and put it at the top level
+      remember_me_params = case user_params do
+        %{"remember_me" => remember_me} -> %{"remember_me" => remember_me}
+        _ -> %{}
+      end
+
       conn
-      |> UserAuth.log_in_user(user, user_params)
+      |> UserAuth.log_in_user(user, Map.merge(params, remember_me_params))
     else
       conn
       |> put_flash(:error, "Invalid email or password")
