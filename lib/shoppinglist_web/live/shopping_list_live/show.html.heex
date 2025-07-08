@@ -51,43 +51,52 @@
   <div
     :for={{id, item} <- @streams.shopping_list_items}
     id={id}
-    class={[
-      "p-2 flex items-center justify-between transition-all duration-200",
-      item.collected && "opacity-60 bg-gray-50"
-    ]}
+    class="overflow-hidden"
   >
-    <div class="flex items-center space-x-4 flex-1">
-      <button
-        phx-click="toggle_collected"
-        phx-value-id={item.id}
-        class={[
-          "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors duration-200",
-          item.collected && "bg-green-500 border-green-500",
-          !item.collected && "border-gray-300 hover:border-green-400"
-        ]}
-      >
-        <.icon :if={item.collected} name="hero-check" class="w-4 h-4 text-white" />
-      </button>
+    <div class="flex overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-hide">
+      <!-- Main content -->
+      <div class={[
+        "min-w-full snap-start p-2 flex items-center justify-between transition-all duration-200",
+        item.collected && "opacity-60 bg-gray-50",
+        !item.collected && "bg-white"
+      ]}>
+        <div class="flex items-center space-x-4 flex-1">
+          <button
+            phx-click="toggle_collected"
+            phx-value-id={item.id}
+            class={[
+              "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors duration-200",
+              item.collected && "bg-green-500 border-green-500",
+              !item.collected && "border-gray-300 hover:border-green-400"
+            ]}
+          >
+            <.icon :if={item.collected} name="hero-check" class="w-4 h-4 text-white" />
+          </button>
 
-      <div class="flex-1">
-        <div class={[
-          "font-medium transition-all duration-200",
-          item.collected && "line-through text-gray-500",
-          !item.collected && "text-gray-900"
-        ]}>
-          <%= item.name %><span :if={item.amount > 1} class="text-gray-500"> (<%= item.amount %>)</span>
+          <div class="flex-1">
+            <div class={[
+              "font-medium transition-all duration-200",
+              item.collected && "line-through text-gray-500",
+              !item.collected && "text-gray-900"
+            ]}>
+              <%= item.name %><span :if={item.amount > 1} class="text-gray-500"> (<%= item.amount %>)</span>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <button
-      phx-click="delete_item"
-      phx-value-id={item.id}
-      data-confirm="Are you sure you want to delete this item?"
-      class="text-red-400 hover:text-red-600 p-2"
-    >
-      <.icon name="hero-trash" class="w-5 h-5" />
-    </button>
+      <!-- Delete button (revealed on swipe) -->
+      <div class="min-w-20 snap-start flex items-center justify-center bg-red-500">
+        <button
+          phx-click="delete_item"
+          phx-value-id={item.id}
+          data-confirm="Are you sure you want to delete this item?"
+          class="w-full h-full flex items-center justify-center text-white hover:bg-red-600 transition-colors duration-200"
+        >
+          <.icon name="hero-trash" class="w-5 h-5" />
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
