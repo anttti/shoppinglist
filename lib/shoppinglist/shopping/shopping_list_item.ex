@@ -6,7 +6,7 @@ defmodule Shoppinglist.Shopping.ShoppingListItem do
 
   schema "shopping_list_items" do
     field :name, :string
-    field :amount, :string
+    field :amount, :integer
     field :collected, :boolean, default: false
 
     belongs_to :shopping_list, ShoppingList
@@ -20,7 +20,7 @@ defmodule Shoppinglist.Shopping.ShoppingListItem do
     |> cast(attrs, [:name, :amount, :collected, :shopping_list_id])
     |> validate_required([:name, :amount, :shopping_list_id])
     |> validate_length(:name, min: 1, max: 100)
-    |> validate_length(:amount, min: 1, max: 50)
+    |> validate_number(:amount, greater_than: 0)
     |> foreign_key_constraint(:shopping_list_id)
   end
 end

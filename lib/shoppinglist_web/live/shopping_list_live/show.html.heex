@@ -14,10 +14,7 @@
       <.button class="bg-green-600 hover:bg-green-700">Share</.button>
     </.link>
     <.link patch={~p"/lists/#{@shopping_list}/show/edit"} phx-click={JS.push_focus()}>
-      <.button>Edit shopping list</.button>
-    </.link>
-    <.link navigate={~p"/lists"}>
-      <.button class="bg-gray-500 hover:bg-gray-600">Back to Lists</.button>
+      <.button>Edit</.button>
     </.link>
   </:actions>
 </.header>
@@ -50,12 +47,12 @@
 </div>
 
 <!-- Shopping List Items -->
-<div class="space-y-3" phx-update="stream" id="shopping-list-items">
+<div class="" phx-update="stream" id="shopping-list-items">
   <div
     :for={{id, item} <- @streams.shopping_list_items}
     id={id}
     class={[
-      "bg-white rounded-lg shadow-md p-4 flex items-center justify-between transition-all duration-200",
+      "p-2 flex items-center justify-between transition-all duration-200",
       item.collected && "opacity-60 bg-gray-50"
     ]}
   >
@@ -78,10 +75,7 @@
           item.collected && "line-through text-gray-500",
           !item.collected && "text-gray-900"
         ]}>
-          <%= item.name %>
-        </div>
-        <div class="text-sm text-gray-500">
-          Amount: <%= item.amount %>
+          <%= item.name %><span :if={item.amount > 1} class="text-gray-500"> (<%= item.amount %>)</span>
         </div>
       </div>
     </div>
