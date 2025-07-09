@@ -13,3 +13,25 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none;  /* Chrome, Safari, Opera */
 }
+
+/* Touch-friendly dropdown */
+@media (hover: none) and (pointer: coarse) {
+  .group:focus-within .group-hover\:opacity-100 {
+    opacity: 1;
+  }
+  
+  .group:focus-within .group-hover\:visible {
+    visibility: visible;
+  }
+  
+  .group:focus-within .group-hover\:translate-y-0 {
+    transform: translateY(0);
+  }
+}
+
+/* Ensure dropdown stays open when hovering over it */
+.dropdown-menu:hover {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateY(0) !important;
+}

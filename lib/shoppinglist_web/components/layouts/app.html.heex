@@ -8,13 +8,24 @@
     </div>
     <div class="flex items-center gap-4 font-semibold leading-6 text-zinc-900">
       <%= if @current_user do %>
-        <span class="text-sm text-zinc-600"><%= @current_user.email %></span>
-        <.link navigate={~p"/users/settings"} class="hover:text-zinc-700">
-          Settings
-        </.link>
-        <.link href={~p"/users/log_out"} method="delete" class="hover:text-zinc-700">
-          Log out
-        </.link>
+        <div class="relative group">
+          <button class="flex items-center gap-1 text-sm text-zinc-600 hover:text-zinc-800 cursor-pointer focus:outline-none" tabindex="0">
+            <%= @current_user.email %>
+            <.icon name="hero-chevron-down" class="w-4 h-4" />
+          </button>
+          <div class="dropdown-menu absolute right-0 top-full w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 ease-out transform translate-y-[-8px] group-hover:translate-y-0 pt-1">
+            <div class="bg-white border border-zinc-200 rounded-lg shadow-lg">
+              <div class="py-1">
+              <.link navigate={~p"/users/settings"} class="block px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-100">
+                Settings
+              </.link>
+              <.link href={~p"/users/log_out"} method="delete" class="block px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-100">
+                Log out
+              </.link>
+              </div>
+            </div>
+          </div>
+        </div>
       <% else %>
         <.link navigate={~p"/users/log_in"} class="hover:text-zinc-700">
           Log in
