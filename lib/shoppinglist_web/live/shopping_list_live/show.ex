@@ -12,6 +12,8 @@ defmodule ShoppinglistWeb.ShoppingListLive.Show do
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
     shopping_list = Shopping.get_user_shopping_list!(socket.assigns.current_user, id)
+    IO.inspect(socket.assigns.current_user)
+    IO.inspect(id)
 
     if connected?(socket) do
       Shopping.subscribe_to_shopping_list(id)

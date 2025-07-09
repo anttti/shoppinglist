@@ -10,7 +10,7 @@ defmodule Shoppinglist.Shopping.ShoppingList do
     field :color, :string
 
     belongs_to :creator, User
-    has_many :items, ShoppingListItem, on_delete: :delete_all, preload_order: [asc: :inserted_at]
+    has_many :items, ShoppingListItem, on_delete: :delete_all, preload_order: [asc: :collected, desc: :updated_at]
     has_many :shopping_list_users, ShoppingListUser, on_delete: :delete_all
     has_many :users, through: [:shopping_list_users, :user]
 

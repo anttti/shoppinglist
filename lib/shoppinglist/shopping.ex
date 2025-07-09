@@ -22,11 +22,7 @@ defmodule Shoppinglist.Shopping do
       order_by: [desc: sl.updated_at]
     )
     |> Repo.all()
-    |> Repo.preload([
-      :creator,
-      :users,
-      items: from(i in ShoppingListItem, order_by: [asc: i.inserted_at])
-    ])
+    |> Repo.preload([:creator, :users])
   end
 
   @doc """
@@ -34,11 +30,7 @@ defmodule Shoppinglist.Shopping do
   """
   def get_shopping_list!(id) do
     Repo.get!(ShoppingList, id)
-    |> Repo.preload([
-      :creator,
-      :users,
-      items: from(i in ShoppingListItem, order_by: [asc: i.inserted_at])
-    ])
+    |> Repo.preload([:creator, :users, :items])
   end
 
   @doc """
@@ -52,11 +44,7 @@ defmodule Shoppinglist.Shopping do
       distinct: sl.id
     )
     |> Repo.one!()
-    |> Repo.preload([
-      :creator,
-      :users,
-      items: from(i in ShoppingListItem, order_by: [asc: i.inserted_at])
-    ])
+    |> Repo.preload([:creator, :users, :items])
   end
 
   @doc """
