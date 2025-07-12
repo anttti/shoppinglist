@@ -19,7 +19,7 @@ defmodule ShoppinglistWeb.ShoppingListLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:name]} type="text" label="Name" />
+        <.input field={@form[:name]} type="text" label="Name" autocomplete="off" />
         <.input field={@form[:color]} type="color" label="Color" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Shopping list</.button>
