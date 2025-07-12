@@ -1,0 +1,6 @@
+- Error in registration
+- Error when creating new list
+- Dark theme
+- Icons missing
+- Mobile layout sucks
+- Item categorization
