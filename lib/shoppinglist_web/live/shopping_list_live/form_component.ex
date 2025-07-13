@@ -9,7 +9,6 @@ defmodule ShoppinglistWeb.ShoppingListLive.FormComponent do
     <div>
       <.header>
         <%= @title %>
-        <:subtitle>Use this form to manage shopping list records in your database.</:subtitle>
       </.header>
 
       <.simple_form
@@ -52,7 +51,7 @@ defmodule ShoppinglistWeb.ShoppingListLive.FormComponent do
   defp save_shopping_list(socket, :edit, shopping_list_params) do
     case Shopping.update_shopping_list(socket.assigns.shopping_list, shopping_list_params) do
       {:ok, shopping_list} ->
-        notify_parent({:saved, shopping_list})
+        send(self(), {:shopping_list_updated, shopping_list})
 
         {:noreply,
          socket
@@ -67,7 +66,7 @@ defmodule ShoppinglistWeb.ShoppingListLive.FormComponent do
   defp save_shopping_list(socket, :new, shopping_list_params) do
     case Shopping.create_shopping_list(socket.assigns.current_user, shopping_list_params) do
       {:ok, shopping_list} ->
-        notify_parent({:saved, shopping_list})
+        send(self(), {:shopping_list_created, shopping_list})
 
         {:noreply,
          socket
@@ -78,6 +77,4 @@ defmodule ShoppinglistWeb.ShoppingListLive.FormComponent do
         {:noreply, assign(socket, form: to_form(changeset))}
     end
   end
-
-  defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
 end

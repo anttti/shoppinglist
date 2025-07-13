@@ -51,9 +51,12 @@ defmodule Shoppinglist.Shopping do
   Creates a shopping list.
   """
   def create_shopping_list(%User{} = user, attrs \\ %{}) do
-    %ShoppingList{}
-    |> ShoppingList.changeset(Map.put(attrs, "creator_id", user.id))
-    |> Repo.insert()
+    with {:ok, shopping_list} <-
+           %ShoppingList{}
+           |> ShoppingList.changeset(Map.put(attrs, "creator_id", user.id))
+           |> Repo.insert() do
+      {:ok, Repo.preload(shopping_list, [:creator, :users, :items])}
+    end
   end
 
   @doc """
